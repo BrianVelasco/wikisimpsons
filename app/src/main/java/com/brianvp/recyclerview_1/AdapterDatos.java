@@ -7,14 +7,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.brianvp.recyclerview_1.urilidades.Utilidades;
+
 import java.util.ArrayList;
 
 /**
  * Created by IBVP on 05/11/2018.
  */
 
-public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDatos> {
+public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDatos> implements View.OnClickListener {
     ArrayList<Personaje> listDato;
+    //para crear el evento
+    private View.OnClickListener listener;
 
     public AdapterDatos(ArrayList<Personaje> listDato) {
         this.listDato = listDato;
@@ -24,8 +28,18 @@ public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDa
     public AdapterDatos.ViewHolderDatos onCreateViewHolder(ViewGroup parent, int viewType) {
         //enlaza el adaptador con itemview
         //Inflamos view y lo retornamos a
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.itemrv,null,false);
+        int layout;
+        if (Utilidades.visualizacion == Utilidades.list){
+            layout = R.layout.itemrv;
+        }else {
+            layout = R.layout.griditem;
+        }
+        View view = LayoutInflater.from(parent.getContext()).inflate(layout,null,false);
+        view.setOnClickListener(this);
         return new ViewHolderDatos(view);
+
+
+
     }
 
     @Override
@@ -34,15 +48,33 @@ public class AdapterDatos extends RecyclerView.Adapter<AdapterDatos.ViewHolderDa
        //Solo con strings
         // holder.asignarDatos(listDato.get(position));
         //Con personajes
-        holder.nombre.setText(listDato.get(position).getNombre());
-        holder.des.setText(listDato.get(position).getDesc());
-        holder.foto.setImageResource(listDato.get(position).getFoto());
+        if (Utilidades.visualizacion == Utilidades.list){
+            holder.nombre.setText(listDato.get(position).getNombre());
+            holder.des.setText(listDato.get(position).getDesc());
+            holder.foto.setImageResource(listDato.get(position).getFoto());
+        }else {
+            holder.nombre.setText(listDato.get(position).getNombre());
+            holder.foto.setImageResource(listDato.get(position).getFoto());
+        }
+
 
     }
 
     @Override
     public int getItemCount() {
         return listDato.size();
+    }
+    public void setOnClickListener(View.OnClickListener listener){
+        this.listener = listener;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(listener != null){
+            listener.onClick(view);
+        }
+
+
     }
 
     public class ViewHolderDatos extends RecyclerView.ViewHolder {

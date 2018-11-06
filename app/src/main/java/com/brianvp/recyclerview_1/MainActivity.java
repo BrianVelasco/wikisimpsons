@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Toast;
+
+import com.brianvp.recyclerview_1.urilidades.Utilidades;
 
 import java.util.ArrayList;
 
@@ -18,22 +22,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recycler = (RecyclerView) findViewById(R.id.recyclerId);
+        construirRecycler();
 
-        recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        //Presentar en un grid (this, numero de columnas)
-        //recycler.setLayoutManager(new GridLayoutManager(this,2));
-
-        /*listDato = new ArrayList<>();
-        for (int i=0; i<=50; i++){
-            listDato.add("Dato : "+i+" ");
-        }
-        AdapterDatos adapter = new AdapterDatos(listDato);
-        recycler.setAdapter(adapter);*/
-        listaDatos = new ArrayList<Personaje>();
-        llenarPersonajes();
-        AdapterDatos personajes = new AdapterDatos(listaDatos);
-        recycler.setAdapter(personajes);
     }
 
     private void llenarPersonajes() {
@@ -46,5 +36,52 @@ public class MainActivity extends AppCompatActivity {
         listaDatos.add(new Personaje("Magie","Debido a que aún no puede hablar, Maggie es la que menos protagonismo e importancia tiene en la familia Simpson",R.drawable.magie));
         listaDatos.add(new Personaje("Marge","Marjorie \"Marge\" Simpson (apellido de soltera Bouvier), es la Esposa de Homer Simpson y madre de tres hijos: Bart, Lisa y Maggie. Ella, junto al resto de su familia, conforman el elenco de personajes protagonistas de Los Simpson",R.drawable.marge));
         listaDatos.add(new Personaje("Milhouse","Es el mejor amigo de Bart Simpson. Tiene aspecto y comportamientos de nerd, pero dista mucho de serlo. De hecho, en una ocasión señaló que no era un nerd \"porque los nerds son listos\".",R.drawable.milhouse));
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.btnlista:
+                Utilidades.visualizacion = Utilidades.list;
+                break;
+            case R.id.btngrid:
+                Utilidades.visualizacion = Utilidades.grid;
+                break;
+
+        }
+        construirRecycler();
+    }
+
+    private void construirRecycler() {
+        listaDatos = new ArrayList<Personaje>();
+        recycler = (RecyclerView) findViewById(R.id.recyclerId);
+
+        if (Utilidades.visualizacion == Utilidades.list){
+            recycler.setLayoutManager(new LinearLayoutManager(this));
+        }else {
+            recycler.setLayoutManager(new GridLayoutManager(this,3));
+        }
+
+        //recycler.setLayoutManager(new LinearLayoutManager(this));
+        //recycler.setLayoutManager(new GridLayoutManager(this,3));
+        //Presentar en un grid (this, numero de columnas)
+        //recycler.setLayoutManager(new GridLayoutManager(this,2));
+
+        /*listDato = new ArrayList<>();
+        for (int i=0; i<=50; i++){
+            listDato.add("Dato : "+i+" ");
+        }
+        AdapterDatos adapter = new AdapterDatos(listDato);
+        recycler.setAdapter(adapter);*/
+
+        llenarPersonajes();
+        AdapterDatos personajes = new AdapterDatos(listaDatos);
+        personajes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(),"Seleccionado :"+
+                                listaDatos.get(recycler.getChildPosition(view)).getNombre(),Toast.LENGTH_LONG).show();
+            }
+        });
+        recycler.setAdapter(personajes);
     }
 }
